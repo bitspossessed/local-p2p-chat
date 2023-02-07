@@ -10,10 +10,14 @@ For our fun session on 10.02.23!
 
 ## Usage
 
-```
+```bash
 # Install dependencies
 npm install
 
 # Run it!
 npm start
 ```
+
+## License
+
+`UNLICENSE`
