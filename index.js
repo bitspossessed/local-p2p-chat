@@ -7,13 +7,17 @@ import readline from 'readline';
 import chalk from 'chalk';
 import dns from 'dns-packet';
 
+// Frequency of broadcasting via mDNS
 const BROADCAST_INTERVAL_MS = 5000;
 
+// As defined per RFC 6762
 const MDNS_ADDRESS = '224.0.0.251';
 const MDNS_PORT = 5353;
 
+// "Service" we want to announce via mDNS
 const TOPIC = 'p2p-chat';
 
+// Helper method to retreive your host's IPv4 address
 function getIPv4Address() {
   let result = '0.0.0.0';
 
@@ -33,13 +37,29 @@ function getIPv4Address() {
   return result;
 }
 
+// Helper method to generate a random hash. This helps us to identify
+// different peers.
+//
+// ✺ If you want to be fancy you can replace this with a cryptographic
+// key pair and start signing your messages you send on the chat 8-)
 function generateRandomId(len = 8) {
   const bytes = new Uint8Array((len || 40) / 2);
   crypto.getRandomValues(bytes);
   return Buffer.from(bytes).toString('hex');
 }
 
+/*
+  ██████ ██   ██  █████  ████████
+██      ██   ██ ██   ██    ██
+██      ███████ ███████    ██
+██      ██   ██ ██   ██    ██
+ ██████ ██   ██ ██   ██    ██  */
+
 class Chat {
+  // Create a UDP socket listening to a random port (given by the OS)
+  // on all interfaces.
+  //
+  // React to incoming chat messages and show them in terminal.
   constructor(options) {
     const emitter = new events.EventEmitter();
 
@@ -78,6 +98,10 @@ class Chat {
     this.peers = [];
   }
 
+  // Send a chat message to all known peers, one by one
+  //
+  // ✺ Or use UDP multicast here as well, but this example is maybe closer
+  // to how you would do it with TCP (and without any cool routing, like gossiping)
   send(message) {
     const data = Buffer.from(message);
 
@@ -86,6 +110,7 @@ class Chat {
     });
   }
 
+  // Add someone to our list of known peers, make sure there are no duplicates
   addPeer({ address, port, id }) {
     // Check if peer is already registered
     const exists = this.peers.find((peer) => {
@@ -110,7 +135,17 @@ class Chat {
   }
 }
 
+
+/*
+██████  ██ ███████  ██████  ██████  ██    ██ ███████ ██████  ██    ██
+██   ██ ██ ██      ██      ██    ██ ██    ██ ██      ██   ██  ██  ██
+██   ██ ██ ███████ ██      ██    ██ ██    ██ █████   ██████    ████
+██   ██ ██      ██ ██      ██    ██  ██  ██  ██      ██   ██    ██
+██████  ██ ███████  ██████  ██████    ████   ███████ ██   ██    ██  */
+
 class Discovery {
+  // Listen to all incoming mDNS messages over UDP and frequently broadcast
+  // our interest in a certain "service" topic
   constructor(options) {
     const emitter = new events.EventEmitter();
 
@@ -173,6 +208,7 @@ class Discovery {
     this.socket.send(message, 0, message.length, MDNS_PORT, MDNS_ADDRESS);
   }
 
+  // Send a DNS query to ask if someone is interested in our topic
   queryTopic() {
     const message = dns.encode({
       type: 'query',
@@ -187,6 +223,7 @@ class Discovery {
     this.broadcast(message);
   }
 
+  // Send a DNS response to answer somebodies query
   respondTopic() {
     const { address, port, id } = this.options;
 
@@ -206,6 +243,13 @@ class Discovery {
     this.broadcast(message);
   }
 }
+
+/* 
+██    ██  █████  ██    ██ ██
+ ██  ██  ██   ██  ██  ██  ██
+  ████   ███████   ████   ██
+   ██    ██   ██    ██
+   ██    ██   ██    ██    ██ */
 
 const address = getIPv4Address();
 const id = generateRandomId();
