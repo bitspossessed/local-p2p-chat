@@ -1,0 +1,21 @@
+{
+  "name": "local-p2p-chat",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Building a simple p2p chat with mDNS discovery",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "p2p",
+    "mdns",
+    "chat"
+  ],
+  "author": "bitspossessed",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "dns-packet": "^5.4.0"
+  }
+}
