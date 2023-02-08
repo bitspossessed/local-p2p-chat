@@ -30,7 +30,7 @@ npm start
 
 ## How can you make this run on the internet?
 
-For this we can't use mDNS anymore as this only works on local networks. To find others in p2p manner on the internet there are different techniques, but all of them usually need something like a "rendevouz" or "bootstrapping" server which helps to establish a connection between two peers (for example like an ICE server to establish WebRTC p2p connections). Another problem is that usually computers are behind NATs, so other peers can't know your local IP address from the outside. For this we need a technique called UDP hole-punching.
+For this we can't use mDNS anymore as this only works on local networks. To find others in p2p manner on the internet there are different techniques, but all of them usually need something like a "rendevouz" or "bootstrapping" server which helps to establish a connection between two peers. Another problem is that usually computers are behind NATs, so other peers can't know your local IP address from the outside. For this we need a technique called [UDP hole-punching](https://en.wikipedia.org/wiki/UDP_hole_punching).
 
 ## License
 
