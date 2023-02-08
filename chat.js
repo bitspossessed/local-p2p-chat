@@ -14,6 +14,17 @@ export default class Chat {
       type: 'udp4',
     });
 
+    socket.on('listening', () => {
+      const { port } = this.socket.address();
+      console.log(`Listening UDP socket for p2p chat @ port ${port}`);
+
+      emitter.emit('ready', port);
+    });
+
+    socket.on('error', (error) => {
+      console.error(`Something went wrong: ${error.message}`);
+    });
+
     socket.on('message', (data, info) => {
       // Find identifier of this peer
       const peer = this.peers.find((peer) => {
@@ -28,13 +39,6 @@ export default class Chat {
       // Show message
       const message = String.fromCharCode.apply(String, data);
       console.log(`${chalk.green.bold(peer.id)}: ${chalk.green(message)}`);
-    });
-
-    socket.on('listening', () => {
-      const { port } = this.socket.address();
-      console.log(`Listening UDP socket for p2p chat @ port ${port}`);
-
-      emitter.emit('ready', port);
     });
 
     socket.bind();
