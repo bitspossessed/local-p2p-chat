@@ -10,8 +10,6 @@ const MDNS_ADDRESS = '224.0.0.251';
 const MDNS_PORT = 5353;
 
 export default class Discovery {
-  // Listen to all incoming mDNS messages over UDP and frequently broadcast
-  // our interest in a certain "service" topic
   constructor(options) {
     const emitter = new events.EventEmitter();
 
@@ -63,6 +61,7 @@ export default class Discovery {
       }
     });
 
+    // Listen to mDNS port on all interfaces
     socket.bind(MDNS_PORT);
 
     this.socket = socket;
